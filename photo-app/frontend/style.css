@@ -1,0 +1,24 @@
+body {
+  font-family: Helvetica, sans;
+  text-align: center;
+  padding: 2rem;
+  background: #fafafa;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#photoContainer {
+  margin-top: 20px;
+}
+
+#photoContainer img {
+  max-width: 80%;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+
