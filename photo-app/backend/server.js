@@ -24,7 +24,7 @@ if (!fs.existsSync(uploadsDir)) {
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization,x-admin-password');
   if (req.method === 'OPTIONS') return res.sendStatus(204);
   next();
 });
@@ -178,20 +178,35 @@ if (upload) {
 
   // Public upload (password temporarily disabled)
   app.post('/upload', upload.single('photo'), (req, res) => {
+    console.log('=== UPLOAD ENDPOINT HIT ===');
+    console.log('Headers:', req.headers);
+    console.log('File object:', req.file);
+    
     const file = req.file;
-    if (!file) return res.status(400).json({ error: 'No file uploaded' });
+    if (!file) {
+      console.log('No file uploaded');
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    console.log('File details:', {
+      filename: file.filename,
+      originalname: file.originalname,
+      mimetype: file.mimetype,
+      size: file.size
+    });
 
     const list = readPhotosList();
     const nowIso = new Date().toISOString();
     const item = {
       filename: file.filename,
-      url: `/uploads/${file.filename}`,
+      url: `/photos/${file.filename}`,
       uploadedAt: nowIso,
       dateUploaded: nowIso
     };
     list.push(item);
     writePhotosList(list);
-    // respond in the shape your snippet uses
+    
+    console.log('Photo saved to photos.json:', item);
     res.json({ message: 'Photo uploaded!', photo: { filename: item.filename, dateUploaded: item.dateUploaded } });
   });
 }
@@ -214,8 +229,5 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Photo Diary backend running on http://localhost:${PORT}`);
 });
-
-
-app.use(express.static(path.join(process.cwd(), "backend", "public")));
 
 
